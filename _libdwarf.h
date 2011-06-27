@@ -39,7 +39,34 @@
 #include "dwarf.h"
 #include "libdwarf.h"
 
-#include "_elftc.h"
+/* #include "_elftc.h" */
+
+#ifndef	offsetof
+#define	offsetof(T, M)		((int) &((T*) 0) -> M)
+#endif
+
+#ifndef	STAILQ_FOREACH_SAFE
+#define STAILQ_FOREACH_SAFE(var, head, field, tvar)            \
+       for ((var) = STAILQ_FIRST((head));                      \
+            (var) && ((tvar) = STAILQ_NEXT((var), field), 1);  \
+            (var) = (tvar))
+#endif
+
+#ifndef	STAILQ_LAST
+#define STAILQ_LAST(head, type, field)                                  \
+        (STAILQ_EMPTY((head)) ?                                         \
+                NULL :                                                  \
+                ((struct type *)(void *)                                \
+                ((char *)((head)->stqh_last) - offsetof(struct type, field))))
+#endif
+
+#ifndef	TAILQ_FOREACH_SAFE
+#define TAILQ_FOREACH_SAFE(var, head, field, tvar)                      \
+	for ((var) = TAILQ_FIRST((head));                               \
+	    (var) && ((tvar) = TAILQ_NEXT((var), field), 1);            \
+	    (var) = (tvar))
+#endif
+
 
 #define DWARF_DIE_HASH_SIZE		8191
 
